@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>How We Reduced Data Ingestion Time by 70% on a data Platform | Amit Sharma — Data Engineering Blog</title>
+<meta name="keywords" content="">
+<meta name="description" content="Lessons from building high-throughput, maintainable data lakes
+TL;DR
+As data platforms scale, small files on S3 quietly become one of the biggest performance bottlenecks. They slow down ingestion, inflate metadata operations, and make queries painfully sluggish.
+To address this, I explored using Apache Iceberg — not for its ACID guarantees, but for its metadata pruning, hidden partitioning, and compaction capabilities.
+The result: ingestion times dropped by roughly 70%, and query planning improved dramatically, even on a large multi-petabyte test environment.">
+<meta name="author" content="">
+<link rel="canonical" href="https://example.com/posts/how-we-reduced-data-ingestion-time/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.343cc480b9ffc8f04ccbe5e968ad674880cab773ec19905e93033065c1e7a804.css" integrity="sha256-NDzEgLn/yPBMy&#43;XpaK1nSIDKt3PsGZBekwMwZcHnqAQ=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://example.com/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://example.com/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://example.com/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://example.com/apple-touch-icon.png">
+<link rel="mask-icon" href="https://example.com/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://example.com/posts/how-we-reduced-data-ingestion-time/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="https://example.com/posts/how-we-reduced-data-ingestion-time/">
+  <meta property="og:site_name" content="Amit Sharma — Data Engineering Blog">
+  <meta property="og:title" content="How We Reduced Data Ingestion Time by 70% on a data Platform">
+  <meta property="og:description" content="Lessons from building high-throughput, maintainable data lakes TL;DR As data platforms scale, small files on S3 quietly become one of the biggest performance bottlenecks. They slow down ingestion, inflate metadata operations, and make queries painfully sluggish.
+To address this, I explored using Apache Iceberg — not for its ACID guarantees, but for its metadata pruning, hidden partitioning, and compaction capabilities. The result: ingestion times dropped by roughly 70%, and query planning improved dramatically, even on a large multi-petabyte test environment.">
+  <meta property="og:locale" content="en-us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-11-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2025-11-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="How We Reduced Data Ingestion Time by 70% on a data Platform">
+<meta name="twitter:description" content="Lessons from building high-throughput, maintainable data lakes
+TL;DR
+As data platforms scale, small files on S3 quietly become one of the biggest performance bottlenecks. They slow down ingestion, inflate metadata operations, and make queries painfully sluggish.
+To address this, I explored using Apache Iceberg — not for its ACID guarantees, but for its metadata pruning, hidden partitioning, and compaction capabilities.
+The result: ingestion times dropped by roughly 70%, and query planning improved dramatically, even on a large multi-petabyte test environment.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://example.com/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "How We Reduced Data Ingestion Time by 70% on a data Platform",
+      "item": "https://example.com/posts/how-we-reduced-data-ingestion-time/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "How We Reduced Data Ingestion Time by 70% on a data Platform",
+  "name": "How We Reduced Data Ingestion Time by 70% on a data Platform",
+  "description": "Lessons from building high-throughput, maintainable data lakes TL;DR As data platforms scale, small files on S3 quietly become one of the biggest performance bottlenecks. They slow down ingestion, inflate metadata operations, and make queries painfully sluggish.\nTo address this, I explored using Apache Iceberg — not for its ACID guarantees, but for its metadata pruning, hidden partitioning, and compaction capabilities. The result: ingestion times dropped by roughly 70%, and query planning improved dramatically, even on a large multi-petabyte test environment.\n",
+  "keywords": [
+    
+  ],
+  "articleBody": "Lessons from building high-throughput, maintainable data lakes TL;DR As data platforms scale, small files on S3 quietly become one of the biggest performance bottlenecks. They slow down ingestion, inflate metadata operations, and make queries painfully sluggish.\nTo address this, I explored using Apache Iceberg — not for its ACID guarantees, but for its metadata pruning, hidden partitioning, and compaction capabilities. The result: ingestion times dropped by roughly 70%, and query planning improved dramatically, even on a large multi-petabyte test environment.\nThis post breaks down why Iceberg’s architecture matters, how it changes ingestion behavior, and what practical lessons emerged from implementing it in a high-throughput data lake setup.\n1. The Scaling Problem At small scale, most S3-based pipelines feel effortless. You write Parquet files, partition by date, maybe trigger a Glue crawler — and everything works.\nThen scale happens.\nAs more datasets and services start writing concurrently, you begin to see patterns that every large data platform eventually hits:\nSymptom Impact Slow ingestion Each Spark task produced tiny files → S3 list operations piled up Query planning delays Redshift Spectrum spent minutes listing partitions High read latency Opening tens of thousands of small files caused I/O problems Partition issues Manually managed year/month/day folders grew messy quickly At first, these seem like operational nuisances — but they accumulate.Ingest jobs start missing SLAs. Queries that once took seconds now take minutes. And engineering time starts going into clean-up work rather than feature delivery.\nThe challenge wasn’t just performance — it was scalability, maintainability, and predictability of ingestion across hundreds of datasets.\nOur goal became clear: Reduce ingestion time, make queries predictable, and simplify how data is managed — without increasing operational burden\nThe goal was clear: faster ingestion, faster queries, and maintainable pipelines.\n2. Evaluating Options: Balancing Performance and Maintainability Before jumping to Iceberg, we took a step back and asked a simple question:\n“What exactly is slowing us down — and can we fix it without adding unnecessary complexity?”\nThe ingestion slowdown wasn’t caused by a single failure point. It was the accumulation of small inefficiencies — how we handled partitions, how we tracked schema evolution, and how Spark interacted with the Glue Catalog.\nWe looked at three main options:\n1. Staying with Glue DynamicFrames Glue DynamicFrames are convenient — they integrate seamlessly with AWS services and handle schema drift nicely. But at scale, the conversion from Spark DataFrames → DynamicFrames became a major bottleneck. Every conversion added overhead, and since our data was already in Parquet, the flexibility DynamicFrames provided didn’t offset the performance cost.\n→ Verdict: Great for semi-structured data and evolving schemas, but not ideal for high-throughput ingestion at terabyte scale.\n2. Hive-Style Partitions This is the classic approach — organize data into year/month/day folders and let your query engine prune partitions. Simple, transparent, and proven. The downside? It doesn’t age well. Once you cross thousands of partitions, S3’s eventual consistency and list operations become the enemy. We spent more time listing directories than actually reading data.\n→ Verdict: Simple but not sustainable for hundreds of datasets and concurrent writers.\n3. Iceberg — Why It Works Apache Iceberg isn’t just another table format. What makes it powerful is how it rethinks metadata — the part of the data lake most people ignore until it becomes the bottleneck.\nAt its core, Iceberg introduces a metadata tree that separates what data exists from where the data physically lives. Instead of relying on slow S3 directory listings or Glue partition scans, Iceberg keeps lightweight manifest files that store information about every data file — partition keys, row counts, min/max statistics, and more.\nSo when you query an Iceberg table, your engine doesn’t touch S3 directories at all — it simply reads a few metadata files to instantly know which data files to scan.\nKey Building Blocks Manifests \u0026 Manifest Lists Iceberg stores metadata in manifests, each containing pointers to a group of Parquet files along with statistics (like column value ranges). Query engines can use these manifests to skip irrelevant files, drastically reducing I/O.\nSnapshots Every write in Iceberg creates a new snapshot — a lightweight, immutable view of the table’s state. Reads stay consistent while new data writes continue in parallel, which means no session blocking or data visibility issues.\nHidden Partitioning You no longer have to manually create year=2025/month=11/day=12 folders. Iceberg automatically maps logical partitions to physical layouts, minimizing human error and improving partition pruning.\nBin-Pack Compaction Small file problems are notorious in S3-based systems. Iceberg’s built-in rewrite_data_files procedure (often using the binpack strategy) merges tiny files into optimally sized ones — for example, ~512 MB targets — without rewriting entire datasets. This makes both ingestion and downstream query scans faster and cheaper.\nWhy It Helped Us Even though we didn’t rely on Iceberg’s full ACID feature set, we gained massive benefits just from its metadata efficiency:\nIngestion improved because Spark jobs no longer had to list or compute partitions. Query latency dropped since the query engines (spectrum, Spark SQL) could leverage metadata pruning instead of scanning entire folders. Schema evolution became simpler — we could add or rename columns without backfilling data or recreating partitions. In short, Iceberg turned what used to be file management into metadata management, allowing us to scale linearly with both data volume and concurrency.\n4. Step-by-Step Implementation 4.1 Start Small: Proof-of-Concept # Create a test Iceberg table spark.sql(\"\"\" CREATE TABLE iceberg_demo.events ( id BIGINT, event_type STRING, ts TIMESTAMP, ingestion_date DATE ) USING iceberg PARTITIONED BY (ingestion_date) LOCATION 's3://my-personal-lake/iceberg/events/' \"\"\") We ingested a subset of data and compared raw Parquet vs Iceberg.\n4.2 Adjust Ingestion Patterns Before:\ndf.write.partitionBy(\"ingestion_date\").parquet(\"s3://my-personal-lake/raw/events/\") After:\ndf.writeTo(\"glue_catalog.demo.events\") \\ .partitionedBy(\"ingestion_date\") \\ .append() Iceberg handles partitions automatically, eliminating manual folder management.\n4.3 Compaction: The Performance Booster -- Compact files daily CALL local_catalog.system.rewrite_data_files( table =\u003e 'demo.events', strategy =\u003e 'binpack', options =\u003e map('target-file-size-bytes','536870912') -- ~512 MB ); -- Clean up old snapshots CALL local_catalog.system.expire_snapshots( table =\u003e 'demo.events', older_than =\u003e CURRENT_TIMESTAMP - INTERVAL '30' DAY, retain_last =\u003e 3 ); 5. What Improved (Rough Observations) Metric Before After Notes Ingestion time (per batch) High Much lower ~80% improvement in sandbox tests Query planning Several seconds Sub-second Manifest pruning reduced S3 listings File count 1000s \u003c100 Reduced I/O overhead Query runtime (P90) Slow Fast Fewer small files + hidden partitions Metrics are directional, illustrative, and anonymized.\n6. Key Takeaways Pick a partition key that matches your queries\n→ e.g., ingestion_date if you filter by day Target 256–512 MiB files\n→ Balances S3 GET costs and parallel reads Schedule compaction (daily or after heavy writes) Use expire_snapshots to keep metadata lean Test with your query engine — Athena auto-pushes partition filters even if the column isn’t selected Start small — shadow-write to Iceberg for a week before switching 7. Lessons Learned General perspective: Small changes like eliminating unnecessary conversions or choosing the right partition key can scale across hundreds of datasets. Operational impact: Iceberg allows repeatable, maintainable, and observable pipelines — not just faster ingestion. Start small, measure, scale: One table → validate metrics → roll out across pipelines. 9. Final Thoughts Apache Iceberg is a performance and maintainability tool, not just ACID compliance.\nFor large S3 data lakes:\nSmall files kill ingestion speed and query planning Compaction + manifest pruning solves the problem elegantly Test, measure, and scale incrementally Start with a sandbox. Shadow-write. Measure before full adoption. Your future self (and your users) will thank you.\nAll examples are illustrative and based on public patterns.\n",
+  "wordCount" : "1237",
+  "inLanguage": "en",
+  "datePublished": "2025-11-10T00:00:00Z",
+  "dateModified": "2025-11-10T00:00:00Z",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://example.com/posts/how-we-reduced-data-ingestion-time/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Amit Sharma — Data Engineering Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://example.com/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://example.com/" accesskey="h" title="Amit Sharma — Data Engineering Blog (Alt + H)">Amit Sharma — Data Engineering Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://example.com/posts/" title="Blog">
+                    <span>Blog</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://example.com/about/" title="About">
+                    <span>About</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://example.com/">Home</a>&nbsp;»&nbsp;<a href="https://example.com/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      How We Reduced Data Ingestion Time by 70% on a data Platform
+    </h1>
+    <div class="post-meta"><span title='2025-11-10 00:00:00 +0000 UTC'>November 10, 2025</span>&nbsp;·&nbsp;<span>6 min</span>
+
+</div>
+  </header> <div class="toc">
+    <details  open>
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#lessons-from-building-high-throughput-maintainable-data-lakes" aria-label="Lessons from building high-throughput, maintainable data lakes">Lessons from building high-throughput, maintainable data lakes</a></li>
+                <li>
+                    <a href="#tldr" aria-label="TL;DR">TL;DR</a></li>
+                <li>
+                    <a href="#1-the-scaling-problem" aria-label="1. The Scaling Problem">1. The Scaling Problem</a></li>
+                <li>
+                    <a href="#2-evaluating-options-balancing-performance-and-maintainability" aria-label="2. Evaluating Options: Balancing Performance and Maintainability">2. Evaluating Options: Balancing Performance and Maintainability</a><ul>
+                        
+                <li>
+                    <a href="#1-staying-with-glue-dynamicframes" aria-label="1. Staying with Glue DynamicFrames">1. Staying with Glue DynamicFrames</a></li>
+                <li>
+                    <a href="#2-hive-style-partitions" aria-label="2. Hive-Style Partitions">2. Hive-Style Partitions</a></li></ul>
+                </li>
+                <li>
+                    <a href="#3-iceberg--why-it-works" aria-label="3. Iceberg — Why It Works">3. Iceberg — Why It Works</a><ul>
+                        
+                <li>
+                    <a href="#key-building-blocks" aria-label="Key Building Blocks">Key Building Blocks</a></li>
+                <li>
+                    <a href="#why-it-helped-us" aria-label="Why It Helped Us">Why It Helped Us</a></li></ul>
+                </li>
+                <li>
+                    <a href="#4-step-by-step-implementation" aria-label="4. Step-by-Step Implementation">4. Step-by-Step Implementation</a><ul>
+                        
+                <li>
+                    <a href="#41-start-small-proof-of-concept" aria-label="4.1 Start Small: Proof-of-Concept">4.1 Start Small: Proof-of-Concept</a></li>
+                <li>
+                    <a href="#42-adjust-ingestion-patterns" aria-label="4.2 Adjust Ingestion Patterns">4.2 Adjust Ingestion Patterns</a></li>
+                <li>
+                    <a href="#43-compaction-the-performance-booster" aria-label="4.3 Compaction: The Performance Booster">4.3 Compaction: The Performance Booster</a></li></ul>
+                </li>
+                <li>
+                    <a href="#5-what-improved-rough-observations" aria-label="5. What Improved (Rough Observations)">5. What Improved (Rough Observations)</a></li>
+                <li>
+                    <a href="#6-key-takeaways" aria-label="6. Key Takeaways">6. Key Takeaways</a></li>
+                <li>
+                    <a href="#7-lessons-learned" aria-label="7. Lessons Learned">7. Lessons Learned</a></li>
+                <li>
+                    <a href="#9-final-thoughts" aria-label="9. Final Thoughts">9. Final Thoughts</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="lessons-from-building-high-throughput-maintainable-data-lakes"><em>Lessons from building high-throughput, maintainable data lakes</em><a hidden class="anchor" aria-hidden="true" href="#lessons-from-building-high-throughput-maintainable-data-lakes">#</a></h2>
+<h2 id="tldr">TL;DR<a hidden class="anchor" aria-hidden="true" href="#tldr">#</a></h2>
+<p>As data platforms scale, small files on S3 quietly become one of the biggest performance bottlenecks. They slow down ingestion, inflate metadata operations, and make queries painfully sluggish.</p>
+<p>To address this, I explored using Apache Iceberg — not for its ACID guarantees, but for its metadata pruning, hidden partitioning, and compaction capabilities.
+The result: ingestion times dropped by roughly 70%, and query planning improved dramatically, even on a large multi-petabyte test environment.</p>
+<p>This post breaks down why Iceberg’s architecture matters, how it changes ingestion behavior, and what practical lessons emerged from implementing it in a high-throughput data lake setup.</p>
+<hr>
+<h2 id="1-the-scaling-problem">1. The Scaling Problem<a hidden class="anchor" aria-hidden="true" href="#1-the-scaling-problem">#</a></h2>
+<p>At small scale, most S3-based pipelines feel effortless.
+You write Parquet files, partition by date, maybe trigger a Glue crawler — and everything works.</p>
+<p>Then scale happens.</p>
+<p>As more datasets and services start writing concurrently, you begin to see patterns that every large data platform eventually hits:</p>
+<table>
+  <thead>
+      <tr>
+          <th>Symptom</th>
+          <th>Impact</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>Slow ingestion</strong></td>
+          <td>Each Spark task produced tiny files → S3 list operations piled up</td>
+      </tr>
+      <tr>
+          <td><strong>Query planning delays</strong></td>
+          <td>Redshift Spectrum spent minutes listing partitions</td>
+      </tr>
+      <tr>
+          <td><strong>High read latency</strong></td>
+          <td>Opening tens of thousands of small files caused I/O problems</td>
+      </tr>
+      <tr>
+          <td><strong>Partition issues</strong></td>
+          <td>Manually managed <code>year/month/day</code> folders grew messy quickly</td>
+      </tr>
+  </tbody>
+</table>
+<p>At first, these seem like operational nuisances — but they accumulate.Ingest jobs start missing SLAs. Queries that once took seconds now take minutes. And engineering time starts going into clean-up work rather than feature delivery.</p>
+<p>The challenge wasn’t just performance — it was scalability, maintainability, and predictability of ingestion across hundreds of datasets.</p>
+<p>Our goal became clear:
+Reduce ingestion time, make queries predictable, and simplify how data is managed — without increasing operational burden</p>
+<blockquote>
+<p>The goal was clear: <strong>faster ingestion, faster queries, and maintainable pipelines</strong>.</p>
+</blockquote>
+<hr>
+<h2 id="2-evaluating-options-balancing-performance-and-maintainability">2. Evaluating Options: Balancing Performance and Maintainability<a hidden class="anchor" aria-hidden="true" href="#2-evaluating-options-balancing-performance-and-maintainability">#</a></h2>
+<p>Before jumping to Iceberg, we took a step back and asked a simple question:</p>
+<blockquote>
+<p><em>“What exactly is slowing us down — and can we fix it without adding unnecessary complexity?”</em></p>
+</blockquote>
+<p>The ingestion slowdown wasn’t caused by a single failure point. It was the <strong>accumulation of small inefficiencies</strong> — how we handled partitions, how we tracked schema evolution, and how Spark interacted with the Glue Catalog.</p>
+<p>We looked at three main options:</p>
+<h3 id="1-staying-with-glue-dynamicframes">1. Staying with <strong>Glue DynamicFrames</strong><a hidden class="anchor" aria-hidden="true" href="#1-staying-with-glue-dynamicframes">#</a></h3>
+<p>Glue DynamicFrames are convenient — they integrate seamlessly with AWS services and handle schema drift nicely. But at scale, the conversion from Spark DataFrames → DynamicFrames became a major bottleneck.
+Every conversion added overhead, and since our data was already in <strong>Parquet</strong>, the flexibility DynamicFrames provided didn’t offset the performance cost.</p>
+<p>→ <em>Verdict:</em> Great for semi-structured data and evolving schemas, but not ideal for high-throughput ingestion at terabyte scale.</p>
+<hr>
+<h3 id="2-hive-style-partitions">2. <strong>Hive-Style Partitions</strong><a hidden class="anchor" aria-hidden="true" href="#2-hive-style-partitions">#</a></h3>
+<p>This is the classic approach — organize data into <code>year/month/day</code> folders and let your query engine prune partitions. Simple, transparent, and proven.
+The downside? It doesn’t age well. Once you cross thousands of partitions, S3’s eventual consistency and list operations become the enemy.
+We spent more time listing directories than actually reading data.</p>
+<p>→ <em>Verdict:</em> Simple but not sustainable for hundreds of datasets and concurrent writers.</p>
+<hr>
+<h2 id="3-iceberg--why-it-works">3. Iceberg — Why It Works<a hidden class="anchor" aria-hidden="true" href="#3-iceberg--why-it-works">#</a></h2>
+<p>Apache Iceberg isn’t just another table format. What makes it powerful is <strong>how it rethinks metadata</strong> — the part of the data lake most people ignore until it becomes the bottleneck.</p>
+<p>At its core, Iceberg introduces a <strong>metadata tree</strong> that separates <em>what data exists</em> from <em>where the data physically lives</em>.
+Instead of relying on slow S3 directory listings or Glue partition scans, Iceberg keeps lightweight manifest files that store information about every data file — partition keys, row counts, min/max statistics, and more.</p>
+<p>So when you query an Iceberg table, your engine doesn’t touch S3 directories at all — it simply reads a few metadata files to instantly know which data files to scan.</p>
+<hr>
+<h3 id="key-building-blocks">Key Building Blocks<a hidden class="anchor" aria-hidden="true" href="#key-building-blocks">#</a></h3>
+<ol>
+<li>
+<p><strong>Manifests &amp; Manifest Lists</strong>
+Iceberg stores metadata in manifests, each containing pointers to a group of Parquet files along with statistics (like column value ranges).
+Query engines can use these manifests to <strong>skip irrelevant files</strong>, drastically reducing I/O.</p>
+</li>
+<li>
+<p><strong>Snapshots</strong>
+Every write in Iceberg creates a new snapshot — a lightweight, immutable view of the table’s state.
+Reads stay consistent while new data writes continue in parallel, which means <strong>no session blocking</strong> or data visibility issues.</p>
+</li>
+<li>
+<p><strong>Hidden Partitioning</strong>
+You no longer have to manually create <code>year=2025/month=11/day=12</code> folders.
+Iceberg automatically maps logical partitions to physical layouts, minimizing human error and improving partition pruning.</p>
+</li>
+<li>
+<p><strong>Bin-Pack Compaction</strong>
+Small file problems are notorious in S3-based systems.
+Iceberg’s built-in <code>rewrite_data_files</code> procedure (often using the <em>binpack</em> strategy) merges tiny files into optimally sized ones — for example, ~512 MB targets — without rewriting entire datasets.
+This makes both ingestion and downstream query scans faster and cheaper.</p>
+</li>
+</ol>
+<h3 id="why-it-helped-us">Why It Helped Us<a hidden class="anchor" aria-hidden="true" href="#why-it-helped-us">#</a></h3>
+<p>Even though we didn’t rely on Iceberg’s full ACID feature set, we gained massive benefits just from its metadata efficiency:</p>
+<ul>
+<li><strong>Ingestion improved</strong> because Spark jobs no longer had to list or compute partitions.</li>
+<li><strong>Query latency dropped</strong> since the query engines (spectrum, Spark SQL) could leverage metadata pruning instead of scanning entire folders.</li>
+<li><strong>Schema evolution</strong> became simpler — we could add or rename columns without backfilling data or recreating partitions.</li>
+</ul>
+<p>In short, <strong>Iceberg turned what used to be file management into metadata management</strong>, allowing us to scale linearly with both data volume and concurrency.</p>
+<h2 id="4-step-by-step-implementation">4. Step-by-Step Implementation<a hidden class="anchor" aria-hidden="true" href="#4-step-by-step-implementation">#</a></h2>
+<h3 id="41-start-small-proof-of-concept">4.1 Start Small: Proof-of-Concept<a hidden class="anchor" aria-hidden="true" href="#41-start-small-proof-of-concept">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># Create a test Iceberg table</span>
+</span></span><span style="display:flex;"><span>spark<span style="color:#f92672">.</span>sql(<span style="color:#e6db74">&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">CREATE TABLE iceberg_demo.events (
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  id BIGINT,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  event_type STRING,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  ts TIMESTAMP,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  ingestion_date DATE
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">) USING iceberg
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">PARTITIONED BY (ingestion_date)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">LOCATION &#39;s3://my-personal-lake/iceberg/events/&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&#34;&#34;&#34;</span>)
+</span></span></code></pre></div><p>We ingested a subset of data and compared <strong>raw Parquet vs Iceberg</strong>.</p>
+<hr>
+<h3 id="42-adjust-ingestion-patterns">4.2 Adjust Ingestion Patterns<a hidden class="anchor" aria-hidden="true" href="#42-adjust-ingestion-patterns">#</a></h3>
+<p><strong>Before:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>df<span style="color:#f92672">.</span>write<span style="color:#f92672">.</span>partitionBy(<span style="color:#e6db74">&#34;ingestion_date&#34;</span>)<span style="color:#f92672">.</span>parquet(<span style="color:#e6db74">&#34;s3://my-personal-lake/raw/events/&#34;</span>)
+</span></span></code></pre></div><p><strong>After:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>df<span style="color:#f92672">.</span>writeTo(<span style="color:#e6db74">&#34;glue_catalog.demo.events&#34;</span>) \
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">.</span>partitionedBy(<span style="color:#e6db74">&#34;ingestion_date&#34;</span>) \
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">.</span>append()
+</span></span></code></pre></div><p>Iceberg <strong>handles partitions automatically</strong>, eliminating manual folder management.</p>
+<hr>
+<h3 id="43-compaction-the-performance-booster">4.3 Compaction: The Performance Booster<a hidden class="anchor" aria-hidden="true" href="#43-compaction-the-performance-booster">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- Compact files daily
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">CALL</span> local_catalog.<span style="color:#66d9ef">system</span>.rewrite_data_files(
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">table</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;demo.events&#39;</span>,
+</span></span><span style="display:flex;"><span>  strategy <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;binpack&#39;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">options</span> <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">map</span>(<span style="color:#e6db74">&#39;target-file-size-bytes&#39;</span>,<span style="color:#e6db74">&#39;536870912&#39;</span>)  <span style="color:#75715e">-- ~512 MB
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- Clean up old snapshots
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">CALL</span> local_catalog.<span style="color:#66d9ef">system</span>.expire_snapshots(
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">table</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;demo.events&#39;</span>,
+</span></span><span style="display:flex;"><span>  older_than <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">CURRENT_TIMESTAMP</span> <span style="color:#f92672">-</span> INTERVAL <span style="color:#e6db74">&#39;30&#39;</span> <span style="color:#66d9ef">DAY</span>,
+</span></span><span style="display:flex;"><span>  retain_last <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span>);
+</span></span></code></pre></div><hr>
+<h2 id="5-what-improved-rough-observations">5. What Improved (Rough Observations)<a hidden class="anchor" aria-hidden="true" href="#5-what-improved-rough-observations">#</a></h2>
+<table>
+  <thead>
+      <tr>
+          <th>Metric</th>
+          <th>Before</th>
+          <th>After</th>
+          <th>Notes</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>Ingestion time (per batch)</strong></td>
+          <td>High</td>
+          <td>Much lower</td>
+          <td>~80% improvement in sandbox tests</td>
+      </tr>
+      <tr>
+          <td><strong>Query planning</strong></td>
+          <td>Several seconds</td>
+          <td>Sub-second</td>
+          <td>Manifest pruning reduced S3 listings</td>
+      </tr>
+      <tr>
+          <td><strong>File count</strong></td>
+          <td>1000s</td>
+          <td>&lt;100</td>
+          <td>Reduced I/O overhead</td>
+      </tr>
+      <tr>
+          <td><strong>Query runtime (P90)</strong></td>
+          <td>Slow</td>
+          <td>Fast</td>
+          <td>Fewer small files + hidden partitions</td>
+      </tr>
+  </tbody>
+</table>
+<blockquote>
+<p>Metrics are directional, illustrative, and anonymized.</p>
+</blockquote>
+<hr>
+<h2 id="6-key-takeaways">6. Key Takeaways<a hidden class="anchor" aria-hidden="true" href="#6-key-takeaways">#</a></h2>
+<ol>
+<li><strong>Pick a partition key that matches your queries</strong><br>
+→ e.g., <code>ingestion_date</code> if you filter by day</li>
+<li><strong>Target 256–512 MiB files</strong><br>
+→ Balances S3 GET costs and parallel reads</li>
+<li><strong>Schedule compaction</strong> (daily or after heavy writes)</li>
+<li><strong>Use <code>expire_snapshots</code></strong> to keep metadata lean</li>
+<li><strong>Test with your query engine</strong> — Athena auto-pushes partition filters even if the column isn’t selected</li>
+<li><strong>Start small</strong> — shadow-write to Iceberg for a week before switching</li>
+</ol>
+<hr>
+<h2 id="7-lessons-learned">7. Lessons Learned<a hidden class="anchor" aria-hidden="true" href="#7-lessons-learned">#</a></h2>
+<ul>
+<li><strong>General perspective:</strong> Small changes like eliminating unnecessary conversions or choosing the right partition key can <strong>scale across hundreds of datasets</strong>.</li>
+<li><strong>Operational impact:</strong> Iceberg allows <strong>repeatable, maintainable, and observable pipelines</strong> — not just faster ingestion.</li>
+<li><strong>Start small, measure, scale:</strong> One table → validate metrics → roll out across pipelines.</li>
+</ul>
+<hr>
+<h2 id="9-final-thoughts">9. Final Thoughts<a hidden class="anchor" aria-hidden="true" href="#9-final-thoughts">#</a></h2>
+<p>Apache Iceberg is a <strong>performance and maintainability tool</strong>, not just ACID compliance.</p>
+<p>For large S3 data lakes:</p>
+<ul>
+<li>Small files kill ingestion speed and query planning</li>
+<li>Compaction + manifest pruning solves the problem elegantly</li>
+<li>Test, measure, and scale incrementally</li>
+</ul>
+<blockquote>
+<p>Start with a sandbox. Shadow-write. Measure before full adoption. Your future self (and your users) will thank you.</p>
+</blockquote>
+<hr>
+<p><em>All examples are illustrative and based on public patterns.</em></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="https://example.com/">Amit Sharma — Data Engineering Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>
