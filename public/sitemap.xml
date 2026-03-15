@@ -3,28 +3,28 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>http://localhost:1313/datablogs/</loc>
-    <lastmod>2025-11-10T09:00:00+00:00</lastmod>
+    <lastmod>2026-03-15T15:48:06-05:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/datablogs/tags/apache-iceberg/</loc>
-    <lastmod>2025-11-10T09:00:00+00:00</lastmod>
+    <lastmod>2026-03-15T15:48:06-05:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/datablogs/tags/aws-glue/</loc>
-    <lastmod>2025-11-10T09:00:00+00:00</lastmod>
+    <lastmod>2026-03-15T15:48:06-05:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/datablogs/tags/data-engineering/</loc>
-    <lastmod>2025-11-10T09:00:00+00:00</lastmod>
+    <lastmod>2026-03-15T15:48:06-05:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/datablogs/posts/how-we-reduced-data-ingestion-time/</loc>
-    <lastmod>2025-11-10T09:00:00+00:00</lastmod>
+    <lastmod>2026-03-15T15:48:06-05:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/datablogs/posts/</loc>
-    <lastmod>2025-11-10T09:00:00+00:00</lastmod>
+    <lastmod>2026-03-15T15:48:06-05:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/datablogs/tags/spark/</loc>
-    <lastmod>2025-11-10T09:00:00+00:00</lastmod>
+    <lastmod>2026-03-15T15:48:06-05:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/datablogs/tags/</loc>
-    <lastmod>2025-11-10T09:00:00+00:00</lastmod>
+    <lastmod>2026-03-15T15:48:06-05:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/datablogs/categories/</loc>
   </url>
