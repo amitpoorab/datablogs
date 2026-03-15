@@ -44,4 +44,4 @@ enableRobotsTXT = true
   #   url  = "https://linkedin.com/in/your-profile"
 
 [outputs]
-  home = ["HTML", "RSS", "JSON"]
+  home = ["HTML", "RSS", "JSON"]# Test trigger Sun Mar 15 17:06:05 CDT 2026
