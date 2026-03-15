@@ -1,0 +1,52 @@
+name: Hugo → Build & Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [hugo-source]
+  pull_request:
+    branches: [hugo-source]
+  workflow_dispatch:              # allows manual trigger from GitHub UI
+
+# These permissions are required for Pages deployment
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive           # critical for PaperMod theme
+
+      - name: Setup Hugo (extended)
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: 'latest'          # or pin: '0.140.0' – check https://github.com/gohugoio/hugo/releases
+          extended: true                  # needed for SCSS, processing, etc.
+
+      - name: Build static site
+        run: hugo --minify --baseURL "https://amitpoorab.github.io/datablogs/"
+
+      - name: Upload artifact (built site)
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./public
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
