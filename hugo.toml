@@ -1,0 +1,47 @@
+baseURL         = "https://amitpoorab.github.io/datablogs/"
+languageCode    = "en-us"
+title           = "Amit – Data Engineering Notes"
+theme           = "PaperMod"
+
+enableGitInfo   = true
+enableRobotsTXT = true
+
+[minify]
+  disableXML    = true
+  minifyOutput  = true
+
+[params]
+  author      = "Amit"
+  description = "Production data engineering: Spark, Iceberg, Airflow, dbt, cost & performance patterns"
+
+  defaultTheme         = "dark"   # "auto" also works well
+  ShowReadingTime      = true
+  ShowShareButtons     = true
+  ShowPostNavLinks     = true
+  ShowBreadCrumbs      = true
+  ShowCodeCopyButtons  = true
+  ShowToc              = true
+  TocOpen              = true     # TOC expanded by default
+
+  # Profile mode: full-page profile on home (with image + social links)
+  [params.profileMode]
+    enabled   = false
+    title     = "Data Engineering – Real-World Patterns"
+    subtitle  = "Lessons from production systems in 2026"
+    # Uncomment and add your own image later:
+    # imageUrl    = "/images/avatar.jpg"
+    # imageTitle  = "Amit Sharma"
+    # imageWidth  = 120
+    # imageHeight = 120
+
+  # Social icons (shown in profile/home-info modes)
+  [[params.socialIcons]]
+    name = "github"
+    url  = "https://github.com/amitpoorab"
+  # Add more if needed, e.g.:
+  # [[params.socialIcons]]
+  #   name = "linkedin"
+  #   url  = "https://linkedin.com/in/your-profile"
+
+[outputs]
+  home = ["HTML", "RSS", "JSON"]

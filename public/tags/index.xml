@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Tags on Amit – Data Engineering Notes</title>
+    <link>http://localhost:1313/datablogs/tags/</link>
+    <description>Recent content in Tags on Amit – Data Engineering Notes</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 10 Nov 2025 09:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/datablogs/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Apache-Iceberg</title>
+      <link>http://localhost:1313/datablogs/tags/apache-iceberg/</link>
+      <pubDate>Mon, 10 Nov 2025 09:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/datablogs/tags/apache-iceberg/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Aws-Glue</title>
+      <link>http://localhost:1313/datablogs/tags/aws-glue/</link>
+      <pubDate>Mon, 10 Nov 2025 09:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/datablogs/tags/aws-glue/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Data-Engineering</title>
+      <link>http://localhost:1313/datablogs/tags/data-engineering/</link>
+      <pubDate>Mon, 10 Nov 2025 09:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/datablogs/tags/data-engineering/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Spark</title>
+      <link>http://localhost:1313/datablogs/tags/spark/</link>
+      <pubDate>Mon, 10 Nov 2025 09:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/datablogs/tags/spark/</guid>
+      <description></description>
+    </item>
+  </channel>
+</rss>
