@@ -29,11 +29,11 @@ jobs:
       - name: Setup Hugo (extended)
         uses: peaceiris/actions-hugo@v3
         with:
-          hugo-version: 'latest'          # or pin: '0.140.0' – check https://github.com/gohugoio/hugo/releases
+          hugo-version: '0.136.5'          # or pin: '0.140.0' – check https://github.com/gohugoio/hugo/releases
           extended: true                  # needed for SCSS, processing, etc.
 
       - name: Build static site
-        run: hugo --minify --baseURL "https://amitpoorab.github.io/datablogs/"
+        run: hugo --gc --minify --buildDrafts=false --baseURL "https://amitpoorab.github.io/datablogs/"
 
       - name: Upload artifact (built site)
         uses: actions/upload-pages-artifact@v3
