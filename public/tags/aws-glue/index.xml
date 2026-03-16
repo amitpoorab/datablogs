@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Aws-Glue on Amit – Data Engineering Notes</title>
-    <link>http://localhost:1313/datablogs/tags/aws-glue/</link>
+    <link>https://amitpoorab.github.io/datablogs/tags/aws-glue/</link>
     <description>Recent content in Aws-Glue on Amit – Data Engineering Notes</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <lastBuildDate>Sun, 15 Mar 2026 15:48:06 -0500</lastBuildDate>
-    <atom:link href="http://localhost:1313/datablogs/tags/aws-glue/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://amitpoorab.github.io/datablogs/tags/aws-glue/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>How We Reduced Data Ingestion Time by 70% on Our Data Platform</title>
-      <link>http://localhost:1313/datablogs/posts/how-we-reduced-data-ingestion-time/</link>
+      <link>https://amitpoorab.github.io/datablogs/posts/how-we-reduced-data-ingestion-time/</link>
       <pubDate>Mon, 10 Nov 2025 09:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/datablogs/posts/how-we-reduced-data-ingestion-time/</guid>
+      <guid>https://amitpoorab.github.io/datablogs/posts/how-we-reduced-data-ingestion-time/</guid>
       <description>Lessons from building high-throughput, maintainable data lakes with Apache Iceberg.</description>
     </item>
   </channel>

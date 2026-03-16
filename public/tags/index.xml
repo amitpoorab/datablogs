@@ -2,59 +2,59 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Tags on Amit – Data Engineering Notes</title>
-    <link>http://localhost:1313/datablogs/tags/</link>
+    <link>https://amitpoorab.github.io/datablogs/tags/</link>
     <description>Recent content in Tags on Amit – Data Engineering Notes</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 15 Mar 2026 15:48:06 -0500</lastBuildDate>
-    <atom:link href="http://localhost:1313/datablogs/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 16 Mar 2026 11:53:03 -0500</lastBuildDate>
+    <atom:link href="https://amitpoorab.github.io/datablogs/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Clickstream</title>
-      <link>http://localhost:1313/datablogs/tags/clickstream/</link>
+      <link>https://amitpoorab.github.io/datablogs/tags/clickstream/</link>
       <pubDate>Thu, 26 Feb 2026 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/datablogs/tags/clickstream/</guid>
+      <guid>https://amitpoorab.github.io/datablogs/tags/clickstream/</guid>
       <description></description>
     </item>
     <item>
       <title>Data-Engineering</title>
-      <link>http://localhost:1313/datablogs/tags/data-engineering/</link>
+      <link>https://amitpoorab.github.io/datablogs/tags/data-engineering/</link>
       <pubDate>Thu, 26 Feb 2026 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/datablogs/tags/data-engineering/</guid>
+      <guid>https://amitpoorab.github.io/datablogs/tags/data-engineering/</guid>
       <description></description>
     </item>
     <item>
       <title>Iceberg</title>
-      <link>http://localhost:1313/datablogs/tags/iceberg/</link>
+      <link>https://amitpoorab.github.io/datablogs/tags/iceberg/</link>
       <pubDate>Thu, 26 Feb 2026 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/datablogs/tags/iceberg/</guid>
+      <guid>https://amitpoorab.github.io/datablogs/tags/iceberg/</guid>
       <description></description>
     </item>
     <item>
       <title>Lakehouse</title>
-      <link>http://localhost:1313/datablogs/tags/lakehouse/</link>
+      <link>https://amitpoorab.github.io/datablogs/tags/lakehouse/</link>
       <pubDate>Thu, 26 Feb 2026 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/datablogs/tags/lakehouse/</guid>
+      <guid>https://amitpoorab.github.io/datablogs/tags/lakehouse/</guid>
       <description></description>
     </item>
     <item>
       <title>Spark</title>
-      <link>http://localhost:1313/datablogs/tags/spark/</link>
+      <link>https://amitpoorab.github.io/datablogs/tags/spark/</link>
       <pubDate>Thu, 26 Feb 2026 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/datablogs/tags/spark/</guid>
+      <guid>https://amitpoorab.github.io/datablogs/tags/spark/</guid>
       <description></description>
     </item>
     <item>
       <title>Apache-Iceberg</title>
-      <link>http://localhost:1313/datablogs/tags/apache-iceberg/</link>
+      <link>https://amitpoorab.github.io/datablogs/tags/apache-iceberg/</link>
       <pubDate>Mon, 10 Nov 2025 09:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/datablogs/tags/apache-iceberg/</guid>
+      <guid>https://amitpoorab.github.io/datablogs/tags/apache-iceberg/</guid>
       <description></description>
     </item>
     <item>
       <title>Aws-Glue</title>
-      <link>http://localhost:1313/datablogs/tags/aws-glue/</link>
+      <link>https://amitpoorab.github.io/datablogs/tags/aws-glue/</link>
       <pubDate>Mon, 10 Nov 2025 09:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/datablogs/tags/aws-glue/</guid>
+      <guid>https://amitpoorab.github.io/datablogs/tags/aws-glue/</guid>
       <description></description>
     </item>
   </channel>

@@ -25,11 +25,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive           # critical for PaperMod theme
+          fetch-depth: 0                  # required for enableGitInfo
 
       - name: Setup Hugo (extended)
         uses: peaceiris/actions-hugo@v3
         with:
-          hugo-version: '0.136.5'          # or pin: '0.140.0' – check https://github.com/gohugoio/hugo/releases
+          hugo-version: '0.157.0'
           extended: true                  # needed for SCSS, processing, etc.
 
       - name: Build static site
@@ -42,6 +43,7 @@ jobs:
 
   deploy:
     needs: build
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
