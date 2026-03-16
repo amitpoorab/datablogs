@@ -37,10 +37,10 @@ This is where Parquet-only tables and Iceberg diverge.
 - Schema and partition evolution
 - Metadata-driven planning (manifests, manifest lists)
 
-This post is hands-on and based on:
+This post is hands-on and based on the exact Spark + SQL workflow shown in the code snippets below.
 
-- [scripts/generate_clickstream_data.py](scripts/generate_clickstream_data.py)
-- [scripts/late_arrivals_demo.py](scripts/late_arrivals_demo.py)
+[generate_clickstream_data.py](https://github.com/amitpoorab/iceberg_clickstream/blob/main/scripts/generate_clickstream_data.py)
+[late_arrivals_demo.py](https://github.com/amitpoorab/iceberg_clickstream/blob/main/scripts/late_arrivals_demo.py)
 
 ---
 
@@ -165,7 +165,7 @@ Actual output from our 1B-row clickstream table (most recent first):
 ```
 
 Reading this:
-- The latest snapshot (`7249404491565481623`) is an `overwrite` — that is the DELETE correction from `late_arrivals_demo_df.py` for `late-evt-2`.
+- The latest snapshot (`7249404491565481623`) is an `overwrite` — that is the DELETE correction step for `late-evt-2`.
 - The one before it (`8230528333944786019`) is an `append` of 5 late-arriving events.
 - Total rows: **1,000,008,027** — the 1B base load plus all late inserts and corrections.
 - `added_data_files=1` for each late-arrival commit: each small batch produces exactly 1 tiny Parquet file — the small-file problem in action.
@@ -175,10 +175,10 @@ Reading this:
 Here is the real snapshot lineage from our 1B-row clickstream table, reading the `parent_id` chain:
 
 ```
-[S_bulk: snap=6575424270833126431]  →  ...  →  [S_late_append: snap=8230528333944786019]
-  append (bulk 10M batch)                         append (5 late events)
-  ~181 manifests                                  1 new manifest
-  2026-03-05 partition                            2026-02-24 partition
+[S_bulk: snap=7692014682867049918]  →  ...  →  [S_late_append: snap=8230528333944786019]
+  append (1B base load in batches)                append (5 late events)
+  181 data files in one bulk manifest             1 new manifest
+  partitions 2026-03-05/2026-03-06               partition 2026-02-24
 
    ↓ parent_id chain
 
@@ -406,7 +406,7 @@ schedule a rewrite/compact job for that partition.
 This is the core of Iceberg's efficiency story.
 Here is the manifest list state at each key snapshot for our actual clickstream table:
 
-**After bulk load snapshot `7692014682867049918` (100M+ events):**
+**After bulk load snapshot `7692014682867049918` (~1B base events):**
 ```
 Manifest List  snap-7692014682867049918.avro
 └── manifest-bulk.avro   added_snapshot=7692014682867049918   files: 181
@@ -442,7 +442,7 @@ Manifest List  snap-7249404491565481623.avro
 ```
 
 **Takeaway:** The 181-file bulk manifest was never touched across any of these commits.
-Only tiny new manifests were appended to the list. This is $O(1)$ metadata overhead per commit.
+Only tiny new manifests were appended to the list. For unchanged partitions, metadata growth is close to constant per commit.
 The bulk manifests from `2026-03-05` / `2026-03-06` are completely unaffected by the `2026-02-24` late arrivals.
 
 ### How planners use manifests for file pruning
