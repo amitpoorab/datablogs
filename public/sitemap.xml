@@ -2,46 +2,55 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://amitpoorab.github.io/datablogs/</loc>
-    <lastmod>2026-03-16T11:53:03-05:00</lastmod>
+    <loc>http://localhost:1313/datablogs/</loc>
+    <lastmod>2026-08-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://amitpoorab.github.io/datablogs/categories/</loc>
-    <lastmod>2026-03-16T11:53:03-05:00</lastmod>
+    <loc>http://localhost:1313/datablogs/categories/</loc>
+    <lastmod>2026-08-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://amitpoorab.github.io/datablogs/tags/clickstream/</loc>
-    <lastmod>2026-03-16T11:53:03-05:00</lastmod>
+    <loc>http://localhost:1313/datablogs/categories/data-agent/</loc>
+    <lastmod>2026-08-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://amitpoorab.github.io/datablogs/posts/2026-03-15-click-stream-data-with-iceberg/</loc>
-    <lastmod>2026-03-16T11:53:03-05:00</lastmod>
+    <loc>http://localhost:1313/datablogs/tags/data-agents/</loc>
+    <lastmod>2026-08-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://amitpoorab.github.io/datablogs/tags/data-engineering/</loc>
-    <lastmod>2026-03-16T11:53:03-05:00</lastmod>
+    <loc>http://localhost:1313/datablogs/tags/data-engineering/</loc>
+    <lastmod>2026-08-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://amitpoorab.github.io/datablogs/categories/data-platform/</loc>
-    <lastmod>2026-03-16T11:53:03-05:00</lastmod>
+    <loc>http://localhost:1313/datablogs/posts/building-your-first-data-agent/</loc>
+    <lastmod>2026-08-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://amitpoorab.github.io/datablogs/tags/iceberg/</loc>
-    <lastmod>2026-03-16T11:53:03-05:00</lastmod>
+    <loc>http://localhost:1313/datablogs/posts/</loc>
+    <lastmod>2026-08-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://amitpoorab.github.io/datablogs/tags/lakehouse/</loc>
-    <lastmod>2026-03-16T11:53:03-05:00</lastmod>
+    <loc>http://localhost:1313/datablogs/tags/</loc>
+    <lastmod>2026-08-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://amitpoorab.github.io/datablogs/posts/</loc>
-    <lastmod>2026-03-16T11:53:03-05:00</lastmod>
+    <loc>http://localhost:1313/datablogs/tags/clickstream/</loc>
+    <lastmod>2026-03-16T16:24:07-05:00</lastmod>
   </url><url>
-    <loc>https://amitpoorab.github.io/datablogs/tags/spark/</loc>
-    <lastmod>2026-03-16T11:53:03-05:00</lastmod>
+    <loc>http://localhost:1313/datablogs/posts/2026-03-15-click-stream-data-with-iceberg/</loc>
+    <lastmod>2026-03-16T16:24:07-05:00</lastmod>
   </url><url>
-    <loc>https://amitpoorab.github.io/datablogs/tags/</loc>
-    <lastmod>2026-03-16T11:53:03-05:00</lastmod>
+    <loc>http://localhost:1313/datablogs/categories/data-platform/</loc>
+    <lastmod>2026-03-16T16:24:07-05:00</lastmod>
   </url><url>
-    <loc>https://amitpoorab.github.io/datablogs/tags/apache-iceberg/</loc>
+    <loc>http://localhost:1313/datablogs/tags/iceberg/</loc>
+    <lastmod>2026-03-16T16:24:07-05:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/datablogs/tags/lakehouse/</loc>
+    <lastmod>2026-03-16T16:24:07-05:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/datablogs/tags/spark/</loc>
+    <lastmod>2026-03-16T16:24:07-05:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/datablogs/tags/apache-iceberg/</loc>
     <lastmod>2026-03-15T15:48:06-05:00</lastmod>
   </url><url>
-    <loc>https://amitpoorab.github.io/datablogs/tags/aws-glue/</loc>
+    <loc>http://localhost:1313/datablogs/tags/aws-glue/</loc>
     <lastmod>2026-03-15T15:48:06-05:00</lastmod>
   </url><url>
-    <loc>https://amitpoorab.github.io/datablogs/posts/how-we-reduced-data-ingestion-time/</loc>
+    <loc>http://localhost:1313/datablogs/posts/how-we-reduced-data-ingestion-time/</loc>
     <lastmod>2026-03-15T15:48:06-05:00</lastmod>
   </url>
 </urlset>

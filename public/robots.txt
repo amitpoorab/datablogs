@@ -1,3 +1,3 @@
 User-agent: *
-Disallow:
-Sitemap: https://amitpoorab.github.io/datablogs/sitemap.xml
+Disallow: /
+Sitemap: http://localhost:1313/datablogs/sitemap.xml
