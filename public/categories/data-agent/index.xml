@@ -6,8 +6,15 @@
     <description>Recent content in Data-Agent on Amit – Data Engineering Notes</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 01 Aug 2026 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 03 Aug 2026 17:07:00 -0700</lastBuildDate>
     <atom:link href="http://localhost:1313/datablogs/categories/data-agent/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>First data agent</title>
+      <link>http://localhost:1313/datablogs/posts/adding-memory-to-the-data-agent/</link>
+      <pubDate>Sun, 02 Aug 2026 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/datablogs/posts/adding-memory-to-the-data-agent/</guid>
+      <description>Adding session memory and learned notes to the data agent</description>
+    </item>
     <item>
       <title>First data agent</title>
       <link>http://localhost:1313/datablogs/posts/building-your-first-data-agent/</link>

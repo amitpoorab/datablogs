@@ -3,28 +3,31 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>http://localhost:1313/datablogs/</loc>
-    <lastmod>2026-08-01T00:00:00+00:00</lastmod>
+    <lastmod>2026-08-03T17:07:00-07:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/datablogs/categories/</loc>
-    <lastmod>2026-08-01T00:00:00+00:00</lastmod>
+    <lastmod>2026-08-03T17:07:00-07:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/datablogs/categories/data-agent/</loc>
-    <lastmod>2026-08-01T00:00:00+00:00</lastmod>
+    <lastmod>2026-08-03T17:07:00-07:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/datablogs/tags/data-agents/</loc>
-    <lastmod>2026-08-01T00:00:00+00:00</lastmod>
+    <lastmod>2026-08-03T17:07:00-07:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/datablogs/tags/data-engineering/</loc>
-    <lastmod>2026-08-01T00:00:00+00:00</lastmod>
+    <lastmod>2026-08-03T17:07:00-07:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/datablogs/posts/building-your-first-data-agent/</loc>
-    <lastmod>2026-08-01T00:00:00+00:00</lastmod>
+    <loc>http://localhost:1313/datablogs/posts/adding-memory-to-the-data-agent/</loc>
+    <lastmod>2026-08-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/datablogs/posts/</loc>
-    <lastmod>2026-08-01T00:00:00+00:00</lastmod>
+    <lastmod>2026-08-03T17:07:00-07:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/datablogs/tags/</loc>
-    <lastmod>2026-08-01T00:00:00+00:00</lastmod>
+    <lastmod>2026-08-03T17:07:00-07:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/datablogs/posts/building-your-first-data-agent/</loc>
+    <lastmod>2026-08-03T17:07:00-07:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/datablogs/tags/clickstream/</loc>
     <lastmod>2026-03-16T16:24:07-05:00</lastmod>
