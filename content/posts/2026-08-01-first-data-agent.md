@@ -1,5 +1,5 @@
 ---
-title: "First data agent"
+title: "Part1: Building first data agent"
 date: 2026-08-01
 slug: "building-your-first-data-agent"
 description: "Building your first data agent from scratch: stages, trade-offs, and design decisions"
