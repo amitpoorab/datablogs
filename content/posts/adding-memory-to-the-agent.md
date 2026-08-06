@@ -6,7 +6,7 @@ description = "Adding session memory and learned notes to the data agent"
 summary = "Building session persistence and agent-directed memory: storing conversations, extracting learned insights as notes, and injecting them into every future interaction."
 tags = ["data-agents", "data-engineering"]
 categories = ["data-agent"]
-draft = true
+draft = false
 +++
 
 
